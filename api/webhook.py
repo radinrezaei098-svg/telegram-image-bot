@@ -13,10 +13,12 @@ TELEGRAM_FILE_API = f"https://api.telegram.org/file/bot{BOT_TOKEN}"
 SUPPORTED_FORMATS = ["PNG", "JPEG", "WEBP", "BMP", "GIF", "ICO", "TIFF"]
 
 
-def send_message(chat_id, text, reply_markup=None):
+def send_message(chat_id, text, reply_markup=None, reply_to_message_id=None):
     payload = {"chat_id": chat_id, "text": text}
     if reply_markup:
         payload["reply_markup"] = reply_markup
+    if reply_to_message_id:
+        payload["reply_to_message_id"] = reply_to_message_id
     r = requests.post(f"{TELEGRAM_API}/sendMessage", json=payload, timeout=15)
     print("sendMessage response:", r.status_code, r.text)
 
@@ -50,16 +52,28 @@ def send_document(chat_id, file_bytes, filename):
     print("sendDocument response:", r.status_code, r.text)
 
 
-def build_format_keyboard(file_id):
+def build_format_keyboard():
+    # نکته مهم: callback_data تلگرام حداکثر ۶۴ بایت مجازه.
+    # پس دیگه file_id رو اینجا نمی‌ذاریم، فقط فرمت مقصد رو می‌فرستیم
+    # و file_id رو موقع callback از روی reply_to_message می‌گیریم.
     buttons, row = [], []
     for fmt in SUPPORTED_FORMATS:
-        row.append({"text": fmt, "callback_data": f"conv|{file_id}|{fmt}"})
+        row.append({"text": fmt, "callback_data": f"conv|{fmt}"})
         if len(row) == 3:
             buttons.append(row)
             row = []
     if row:
         buttons.append(row)
     return {"inline_keyboard": buttons}
+
+
+def extract_file_id(msg):
+    """از یک پیام تلگرام (عکس یا فایل تصویری) file_id رو استخراج می‌کنه."""
+    if "photo" in msg:
+        return msg["photo"][-1]["file_id"]
+    if "document" in msg:
+        return msg["document"]["file_id"]
+    return None
 
 
 def convert_image(image_bytes, target_format):
@@ -90,16 +104,21 @@ def handle_update(update):
         print("is_photo:", is_photo, "is_image_doc:", is_image_doc)
 
         if is_photo or is_image_doc:
-            file_id = msg["photo"][-1]["file_id"] if is_photo else msg["document"]["file_id"]
-            send_message(chat_id, "فرمت مقصد را انتخاب کنید:", build_format_keyboard(file_id))
+            send_message(
+                chat_id,
+                "باحاله! 😍 حالا بگو می‌خوای چه فرمتی تبدیلش کنم 👇",
+                reply_markup=build_format_keyboard(),
+                reply_to_message_id=msg["message_id"],
+            )
         elif msg.get("text") == "/start":
             send_message(
                 chat_id,
-                "سلام! یک عکس برای من بفرست تا فرمتش رو تغییر بدم.\n"
-                "فرمت‌های پشتیبانی‌شده: " + ", ".join(SUPPORTED_FORMATS),
+                "سلاااام! 👋 من ربات تبدیل فرمت عکسم 🖼️✨\n"
+                "یه عکس یا فایل تصویری برام بفرست تا فرمتش رو عوض کنم.\n"
+                "فرمت‌های پشتیبانی‌شده: " + ", ".join(SUPPORTED_FORMATS) + " 🎨",
             )
         else:
-            send_message(chat_id, "لطفاً یک تصویر ارسال کنید (به‌صورت عکس یا فایل).")
+            send_message(chat_id, "یه عکس یا فایل تصویری بفرست تا برات تبدیلش کنم 📸📁")
 
     elif "callback_query" in update:
         cq = update["callback_query"]
@@ -107,8 +126,17 @@ def handle_update(update):
         data = cq["data"]
 
         try:
-            _, file_id, target_format = data.split("|")
-            answer_callback(cq["id"])
+            _, target_format = data.split("|")
+
+            original_msg = cq["message"].get("reply_to_message")
+            file_id = extract_file_id(original_msg) if original_msg else None
+
+            if not file_id:
+                answer_callback(cq["id"], "پیام اصلی رو پیدا نکردم 😕")
+                send_message(chat_id, "اوه! فکر کنم پیام اصلی عکس پاک شده یا خیلی قدیمیه، دوباره برام بفرستش 🙏")
+                return
+
+            answer_callback(cq["id"], "چشم، دارم درستش می‌کنم... ⏳")
 
             file_path = get_file_path(file_id)
             image_bytes = download_telegram_file(file_path)
@@ -116,10 +144,11 @@ def handle_update(update):
 
             ext = target_format.lower()
             send_document(chat_id, converted, f"converted.{ext}")
+            send_message(chat_id, f"تمومه! فایلت به فرمت {target_format} آماده‌ست 🎉")
         except Exception as e:
             print("Conversion error:", traceback.format_exc())
-            answer_callback(cq["id"], "خطا در تبدیل!")
-            send_message(chat_id, f"خطا در تبدیل فرمت: {e}")
+            answer_callback(cq["id"], "یه مشکلی پیش اومد! 😅")
+            send_message(chat_id, f"اوپس، تو تبدیل فرمت خطا خوردم: {e} 🙈")
 
 
 class handler(BaseHTTPRequestHandler):
@@ -141,4 +170,4 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(b"Telegram image-convert bot is running.")
+        self.wfile.write(b"Telegram image-convert bot is running. \xf0\x9f\xa4\x96")
