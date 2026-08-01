@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>تبدیل‌چی | tabdilchi</title>
+<style>
+  :root{
+    --yellow:#FFD400;
+    --yellow-deep:#E6B800;
+    --black:#0B0B0C;
+    --charcoal:#1A1A1C;
+    --white:#FAFAF7;
+    --red:#E4392E;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    background:var(--black);
+    color:var(--white);
+    font-family:'Vazirmatn', 'Tahoma', system-ui, sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:14px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+
+  .phone{
+    width:100%;
+    max-width:430px;
+    background:linear-gradient(180deg, var(--charcoal) 0%, var(--black) 55%);
+    border-radius:32px;
+    border:1px solid #2a2a2c;
+    overflow:hidden;
+    box-shadow:0 30px 60px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.03);
+    position:relative;
+  }
+
+  /* film sprocket strip signature element */
+  .sprocket{
+    position:absolute; top:0; bottom:0; width:14px;
+    background-image:repeating-linear-gradient(180deg, var(--yellow) 0 8px, transparent 8px 20px);
+    opacity:.5;
+  }
+  .sprocket.right{right:0;} .sprocket.left{left:0;}
+
+  .inner{padding:20px 26px; position:relative; z-index:1;}
+
+  /* ---- update banner ---- */
+  .notice{
+    border:1.5px solid var(--red);
+    background:rgba(228,57,46,.08);
+    border-radius:14px;
+    padding:10px 14px;
+    font-size:12.5px;
+    line-height:1.9;
+    color:#ff8b82;
+    margin-bottom:18px;
+    display:flex;
+    gap:8px;
+    align-items:flex-start;
+  }
+  .notice b{color:var(--red); font-weight:800;}
+  .notice .dot{
+    width:7px; height:7px; border-radius:50%; background:var(--red);
+    margin-top:6px; flex:none;
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1; transform:scale(1);} 50%{opacity:.35; transform:scale(.7);}}
+
+  /* ---- header / brand ---- */
+  .hero{
+    text-align:center;
+    padding:6px 6px 20px;
+  }
+
+  .hero-mascot{
+    position:relative;
+    width:132px;
+    height:132px;
+    margin:0 auto 16px;
+  }
+  .mascot-ring{
+    width:100%; height:100%;
+    border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #1e1e20, #000 72%);
+    border:5px solid var(--yellow);
+    box-shadow:0 0 0 3px #000 inset, 0 14px 34px rgba(255,212,0,.14);
+    display:flex; align-items:center; justify-content:center;
+    animation:float 4.5s ease-in-out infinite;
+  }
+  @keyframes float{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);} }
+
+  .bot-antenna{
+    position:absolute; top:-15px; left:50%; transform:translateX(-50%);
+    width:4px; height:15px; background:var(--yellow); border-radius:2px;
+  }
+  .bot-antenna::after{
+    content:''; position:absolute; top:-7px; left:50%; transform:translateX(-50%);
+    width:9px; height:9px; border-radius:50%; background:var(--yellow);
+    box-shadow:0 0 8px rgba(255,212,0,.7);
+  }
+  .bot-head{
+    width:64px; height:56px;
+    background:var(--white);
+    border-radius:20px 20px 24px 24px;
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 10px rgba(0,0,0,.45);
+  }
+  .bot-ear{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:13px; height:13px; border-radius:50%;
+    background:var(--yellow);
+    box-shadow:0 0 0 3px #000 inset;
+  }
+  .bot-ear.l{left:-9px;} .bot-ear.r{right:-9px;}
+  .bot-face{
+    width:48px; height:30px;
+    background:var(--black);
+    border-radius:13px;
+    display:flex; align-items:center; justify-content:center; gap:9px;
+  }
+  .bot-eye{ width:8px; height:8px; border-radius:50%; background:var(--yellow); }
+  .bot-eye.wink{ width:9px; height:2px; border-radius:2px; }
+
+  .tag-badge{
+    position:absolute;
+    background:var(--white); color:var(--black);
+    font-size:9.5px; font-weight:800;
+    padding:4px 8px; border-radius:8px;
+    box-shadow:0 4px 10px rgba(0,0,0,.5);
+    letter-spacing:.02em;
+  }
+  .tag-badge.jpg{ top:-4px; left:-20px; }
+  .tag-badge.png{ top:44%; left:-46px; transform:translateY(-50%); }
+  .tag-badge.webp{ top:-4px; right:-20px; }
+  .tag-badge.gif{ top:44%; right:-46px; transform:translateY(-50%); }
+
+  .brand-name{ margin-bottom:10px; }
+  h1{
+    font-size:30px;
+    margin:0;
+    font-weight:800;
+    letter-spacing:-.01em;
+    display:inline-block;
+  }
+  h1 span{color:var(--yellow);}
+  .brand-en{
+    font-size:11px;
+    color:#8a8a8d;
+    letter-spacing:.28em;
+    font-weight:700;
+    margin-top:2px;
+  }
+
+  .tagline-pill{
+    display:inline-block;
+    background:var(--black);
+    border:1.5px solid var(--yellow);
+    color:var(--yellow);
+    font-size:12.5px;
+    font-weight:800;
+    padding:7px 18px;
+    border-radius:999px;
+    margin:14px 0 8px;
+  }
+
+  .sub{
+    color:#9a9a9d;
+    font-size:13px;
+    margin:0 0 20px;
+    line-height:1.7;
+    text-align:center;
+  }
+
+  /* ---- dropzone ---- */
+  .drop{
+    border:1.5px dashed #48484c;
+    border-radius:18px;
+    padding:24px 14px;
+    text-align:center;
+    cursor:pointer;
+    transition:.2s;
+    background:rgba(255,255,255,.02);
+  }
+  .drop.drag{
+    border-color:var(--yellow);
+    background:rgba(255,212,0,.06);
+  }
+  .drop-icon{
+    width:46px; height:46px; margin:0 auto 10px;
+    border-radius:50%;
+    background:var(--yellow);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--black); font-size:22px; font-weight:800;
+  }
+  .drop p{margin:0; font-size:13px; color:#c9c9cc;}
+  .drop small{display:block; margin-top:4px; color:#6f6f73; font-size:11px;}
+  input[type=file]{display:none;}
+
+  /* ---- preview ---- */
+  .preview-wrap{
+    margin-top:18px;
+    border-radius:16px;
+    overflow:hidden;
+    border:2px solid var(--yellow);
+    position:relative;
+    display:none;
+    background:#000;
+  }
+  .preview-wrap img{width:100%; display:block; max-height:260px; object-fit:contain; background:#111;}
+  .badge{
+    position:absolute; top:8px; left:8px;
+    background:var(--yellow); color:var(--black);
+    font-size:10.5px; font-weight:800;
+    padding:3px 9px; border-radius:999px;
+  }
+
+  /* ---- panel ---- */
+  .panel{margin-top:20px; display:none;}
+  .row{display:flex; gap:10px; margin-bottom:14px;}
+  .field{flex:1;}
+  label{
+    display:block; font-size:11px; color:#9a9a9d;
+    margin-bottom:6px; font-weight:700; letter-spacing:.03em;
+  }
+  input[type=number]{
+    width:100%; background:var(--charcoal); border:1px solid #3a3a3d;
+    color:var(--white); border-radius:10px; padding:10px 12px;
+    font-size:14px; font-family:inherit;
+  }
+  input[type=number]:focus{outline:2px solid var(--yellow); border-color:var(--yellow);}
+
+  .lock-row{
+    display:flex; align-items:center; gap:8px;
+    font-size:12px; color:#c9c9cc; margin-bottom:16px; cursor:pointer;
+    user-select:none;
+  }
+  .lock-row input{accent-color:var(--yellow); width:16px; height:16px;}
+
+  .fmt-group{margin-bottom:16px;}
+  .fmt-options{display:flex; gap:8px;}
+  .fmt-btn{
+    flex:1; padding:10px 0; border-radius:10px;
+    border:1.5px solid #3a3a3d; background:transparent;
+    color:#c9c9cc; font-size:13px; font-weight:700;
+    cursor:pointer; transition:.15s; font-family:inherit;
+  }
+  .fmt-btn.active{
+    background:var(--yellow); border-color:var(--yellow);
+    color:var(--black);
+  }
+
+  .quality-row{margin-bottom:18px;}
+  .quality-row .val{color:var(--yellow); font-weight:800;}
+  input[type=range]{
+    width:100%; accent-color:var(--yellow); height:4px;
+  }
+
+  .presets{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
+  .preset{
+    font-size:11px; padding:6px 10px; border-radius:999px;
+    background:var(--charcoal); border:1px solid #3a3a3d; color:#c9c9cc;
+    cursor:pointer; font-family:inherit;
+  }
+  .preset:hover{border-color:var(--yellow); color:var(--yellow);}
+
+  .btn-main{
+    width:100%; padding:14px; border:none; border-radius:14px;
+    background:var(--yellow); color:var(--black);
+    font-size:15px; font-weight:800; cursor:pointer;
+    letter-spacing:.01em;
+    transition:.15s;
+  }
+  .btn-main:active{transform:scale(.98);}
+  .btn-main:disabled{opacity:.4; cursor:not-allowed;}
+
+  .meta{
+    display:flex; justify-content:space-between;
+    margin-top:12px; font-size:11px; color:#7a7a7d;
+  }
+  .meta b{color:var(--white);}
+
+  .reset-btn{
+    display:block; text-align:center; margin-top:14px;
+    font-size:12px; color:#7a7a7d; background:none; border:none;
+    cursor:pointer; width:100%; font-family:inherit;
+    text-decoration:underline; text-underline-offset:3px;
+  }
+
+  footer{
+    text-align:center; margin-top:22px; padding-top:16px;
+    border-top:1px solid #2a2a2c; font-size:10.5px; color:#5a5a5d;
+    letter-spacing:.04em;
+  }
+  footer .y{color:var(--yellow);}
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="sprocket left"></div>
+  <div class="sprocket right"></div>
+  <div class="inner">
+
+    <div class="notice">
+      <span class="dot"></span>
+      <div><b>در حال به‌روزرسانی:</b> این صفحه هنوز در حال توسعه است و امکانات جدیدی به‌زودی اضافه می‌شود.</div>
+    </div>
+
+    <div class="hero">
+      <div class="hero-mascot">
+        <span class="tag-badge jpg">JPG</span>
+        <span class="tag-badge png">PNG</span>
+        <span class="tag-badge webp">WEBP</span>
+        <span class="tag-badge gif">GIF</span>
+        <div class="mascot-ring">
+          <div class="bot-antenna"></div>
+          <div class="bot-head">
+            <span class="bot-ear l"></span>
+            <span class="bot-ear r"></span>
+            <div class="bot-face">
+              <span class="bot-eye"></span>
+              <span class="bot-eye wink"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="brand-name">
+        <h1>تبدیل<span>چی</span></h1>
+        <div class="brand-en">TABDILCHI</div>
+      </div>
+
+      <div class="tagline-pill">تغییر فرمت و اندازه‌ی عکس</div>
+      <p class="sub">عکس رو بده، فرمتش رو عوض کن یا اندازه‌شو تغییر بده — همه‌چیز همینجا توی مرورگرت انجام می‌شه.</p>
+    </div>
+
+    <div class="drop" id="drop">
+      <div class="drop-icon">＋</div>
+      <p>عکس رو اینجا رها کن یا لمس کن</p>
+      <small>JPG · PNG · WEBP · GIF پشتیبانی می‌شود</small>
+      <input type="file" id="fileInput" accept="image/*">
+    </div>
+
+    <div class="preview-wrap" id="previewWrap">
+      <span class="badge" id="origBadge">اصلی</span>
+      <img id="previewImg" alt="پیش‌نمایش تصویر">
+    </div>
+
+    <div class="panel" id="panel">
+
+      <div class="lock-row" id="lockRow">
+        <input type="checkbox" id="lockAspect" checked>
+        <label for="lockAspect" style="margin:0; font-weight:400; color:#c9c9cc;">حفظ نسبت ابعاد</label>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>عرض (px)</label>
+          <input type="number" id="widthInput" min="1">
+        </div>
+        <div class="field">
+          <label>ارتفاع (px)</label>
+          <input type="number" id="heightInput" min="1">
+        </div>
+      </div>
+
+      <div class="presets" id="presets">
+        <button class="preset" data-w="1080" data-h="1080">۱۰۸۰×۱۰۸۰</button>
+        <button class="preset" data-w="1080" data-h="1920">استوری</button>
+        <button class="preset" data-w="1200" data-h="630">لینک/شبکه اجتماعی</button>
+        <button class="preset" data-w="512" data-h="512">آیکون ۵۱۲</button>
+        <button class="preset" data-w="0" data-h="0" id="origSizeBtn">اندازه اصلی</button>
+      </div>
+
+      <div class="fmt-group">
+        <label>فرمت خروجی</label>
+        <div class="fmt-options" id="fmtOptions">
+          <button class="fmt-btn active" data-fmt="image/jpeg">JPG</button>
+          <button class="fmt-btn" data-fmt="image/png">PNG</button>
+          <button class="fmt-btn" data-fmt="image/webp">WEBP</button>
+        </div>
+      </div>
+
+      <div class="quality-row" id="qualityRow">
+        <label>کیفیت: <span class="val" id="qualityVal">85%</span></label>
+        <input type="range" id="qualityInput" min="10" max="100" value="85">
+      </div>
+
+      <button class="btn-main" id="convertBtn">تبدیل و دانلود</button>
+
+      <div class="meta">
+        <span>اندازه اصلی: <b id="origSizeText">—</b></span>
+        <span>حجم تخمینی: <b id="estSizeText">—</b></span>
+      </div>
+
+      <button class="reset-btn" id="resetBtn">شروع دوباره با عکس دیگر</button>
+    </div>
+
+    <footer>تبدیل‌چی <span class="y">•</span> تبدیل تصویر آفلاین و رایگان</footer>
+  </div>
+</div>
+
+<canvas id="workCanvas" style="display:none;"></canvas>
+
+<script>
+(function(){
+  const drop = document.getElementById('drop');
+  const fileInput = document.getElementById('fileInput');
+  const previewWrap = document.getElementById('previewWrap');
+  const previewImg = document.getElementById('previewImg');
+  const panel = document.getElementById('panel');
+  const widthInput = document.getElementById('widthInput');
+  const heightInput = document.getElementById('heightInput');
+  const lockAspect = document.getElementById('lockAspect');
+  const fmtOptions = document.getElementById('fmtOptions');
+  const qualityRow = document.getElementById('qualityRow');
+  const qualityInput = document.getElementById('qualityInput');
+  const qualityVal = document.getElementById('qualityVal');
+  const convertBtn = document.getElementById('convertBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const origSizeText = document.getElementById('origSizeText');
+  const estSizeText = document.getElementById('estSizeText');
+  const presets = document.getElementById('presets');
+  const workCanvas = document.getElementById('workCanvas');
+
+  let img = new Image();
+  let origW = 0, origH = 0, origFileName = 'image';
+  let selectedFmt = 'image/jpeg';
+
+  function openPicker(){ fileInput.click(); }
+  drop.addEventListener('click', openPicker);
+  drop.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') openPicker(); });
+  drop.setAttribute('tabindex','0');
+
+  ['dragover','dragenter'].forEach(ev=>{
+    drop.addEventListener(ev, e=>{ e.preventDefault(); drop.classList.add('drag'); });
+  });
+  ['dragleave','drop'].forEach(ev=>{
+    drop.addEventListener(ev, e=>{ e.preventDefault(); drop.classList.remove('drag'); });
+  });
+  drop.addEventListener('drop', e=>{
+    const f = e.dataTransfer.files[0];
+    if(f) loadFile(f);
+  });
+  fileInput.addEventListener('change', e=>{
+    const f = e.target.files[0];
+    if(f) loadFile(f);
+  });
+
+  function loadFile(file){
+    if(!file.type.startsWith('image/')){ alert('لطفاً یک فایل تصویری انتخاب کن.'); return; }
+    origFileName = (file.name || 'image').replace(/\.[^/.]+$/, '');
+    const reader = new FileReader();
+    reader.onload = function(e){
+      img = new Image();
+      img.onload = function(){
+        origW = img.naturalWidth;
+        origH = img.naturalHeight;
+        previewImg.src = e.target.result;
+        previewWrap.style.display = 'block';
+        panel.style.display = 'block';
+        widthInput.value = origW;
+        heightInput.value = origH;
+        origSizeText.textContent = origW + '×' + origH;
+        updateEstimate(file.size);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function updateEstimate(bytes){
+    if(!bytes){ estSizeText.textContent='—'; return; }
+    const kb = bytes/1024;
+    estSizeText.textContent = kb > 1024 ? (kb/1024).toFixed(1)+' MB' : Math.round(kb)+' KB';
+  }
+
+  let ratio = 1;
+  widthInput.addEventListener('input', ()=>{
+    if(lockAspect.checked && origW){
+      ratio = origH/origW;
+      heightInput.value = Math.round(widthInput.value * ratio);
+    }
+  });
+  heightInput.addEventListener('input', ()=>{
+    if(lockAspect.checked && origH){
+      ratio = origW/origH;
+      widthInput.value = Math.round(heightInput.value * ratio);
+    }
+  });
+
+  presets.addEventListener('click', e=>{
+    const btn = e.target.closest('.preset');
+    if(!btn) return;
+    const w = parseInt(btn.dataset.w), h = parseInt(btn.dataset.h);
+    if(btn.id === 'origSizeBtn'){
+      widthInput.value = origW; heightInput.value = origH;
+    } else {
+      lockAspect.checked = false;
+      widthInput.value = w; heightInput.value = h;
+    }
+  });
+
+  fmtOptions.addEventListener('click', e=>{
+    const btn = e.target.closest('.fmt-btn');
+    if(!btn) return;
+    [...fmtOptions.children].forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedFmt = btn.dataset.fmt;
+    qualityRow.style.display = selectedFmt === 'image/png' ? 'none' : 'block';
+  });
+
+  qualityInput.addEventListener('input', ()=>{
+    qualityVal.textContent = qualityInput.value + '%';
+  });
+
+  convertBtn.addEventListener('click', ()=>{
+    if(!origW){ return; }
+    const targetW = Math.max(1, parseInt(widthInput.value) || origW);
+    const targetH = Math.max(1, parseInt(heightInput.value) || origH);
+
+    workCanvas.width = targetW;
+    workCanvas.height = targetH;
+    const ctx = workCanvas.getContext('2d');
+    ctx.clearRect(0,0,targetW,targetH);
+    if(selectedFmt === 'image/jpeg'){
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0,0,targetW,targetH);
+    }
+    ctx.drawImage(img, 0, 0, targetW, targetH);
+
+    const quality = selectedFmt === 'image/png' ? undefined : (qualityInput.value/100);
+    workCanvas.toBlob(function(blob){
+      if(!blob){ alert('تبدیل با خطا مواجه شد.'); return; }
+      const ext = selectedFmt.split('/')[1];
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = origFileName + '-converted.' + (ext === 'jpeg' ? 'jpg' : ext);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      updateEstimate(blob.size);
+      setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    }, selectedFmt, quality);
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    previewWrap.style.display = 'none';
+    panel.style.display = 'none';
+    previewImg.src = '';
+    fileInput.value = '';
+    origW = origH = 0;
+    origSizeText.textContent = '—';
+    estSizeText.textContent = '—';
+  });
+})();
+</script>
+
+</body>
+</html>
